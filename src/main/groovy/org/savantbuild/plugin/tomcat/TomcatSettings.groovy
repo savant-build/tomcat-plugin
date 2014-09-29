@@ -19,26 +19,65 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 /**
- * Settings for the webapp plugin.
+ * Settings for the Tomcat plugin.
  *
  * @author Brian Pontarelli
  */
 class TomcatSettings {
+  /**
+   * The Tomcat version. This is used to fetch the tar.gz file and build Paths in this file. Defaults to {@code 8.0.12}.
+   */
+  String version = "8.0.12"
+
+  /**
+   * The directory that the Tomcat tar.gz file is exploded to. Defaults to {@code build}.
+   */
   Path buildDirectory = Paths.get("build")
 
-  Path buildBinDirectory = Paths.get("build/apache-tomcat-8.0.12/bin")
+  /**
+   * The directory that the Tomcat bin files are located. Defaults to {@code build/apache-tomcat-8.0.12/bin}.
+   */
+  Path buildBinDirectory = buildDirectory.resolve("apache-tomcat-${version}/bin")
 
-  Path buildConfDirectory = Paths.get("build/apache-tomcat-8.0.12/conf")
+  /**
+   * The directory that the Tomcat config files are located. Defaults to {@code build/apache-tomcat-8.0.12/conf}.
+   */
+  Path buildConfDirectory = buildDirectory.resolve("apache-tomcat-${version}/conf")
 
-  Path buildWebDirectory = Paths.get("build/apache-tomcat-8.0.12/webapps/ROOT")
+  /**
+   * The directory that the Tomcat web application is located. Defaults to {@code build/apache-tomcat-8.0.12/webapps/ROOT}.
+   */
+  Path buildWebDirectory = buildDirectory.resolve("apache-tomcat-${version}/webapps/ROOT")
 
+  /**
+   * The directory that the Tomcat conf files for the current project are located. Defaults to {@code src/main/tomcat/conf}.
+   */
   Path configurationDirectory = Paths.get("src/main/tomcat/conf")
 
+  /**
+   * The directory that the Tomcat bin files for the current project are located. Defaults to {@code src/main/tomcat/bin}.
+   */
   Path binDirectory = Paths.get("src/main/tomcat/bin")
 
+  /**
+   * The Tomcat dependency group that is used to fetch the Tomcat tar.gz file. Defaults to {@code tomcat}.
+   */
   String dependencyGroup = "tomcat"
 
-  String dependencyID = "org.apache.tomcat:apache-tomcat:8.0.12:tar.gz"
+  /**
+   * The Tomcat dependency ID that is used to fetch the Tomcat tar.gz file. Defaults to {@code org.apache.tomcat:apache-tomcat:8.0.12:tar.gz}.
+   */
+  String dependencyID = "org.apache.tomcat:apache-tomcat:${version}:tar.gz"
 
+  /**
+   * The web application directory in current project. Defaults to {@code web}.
+   */
   Path webDirectory = Paths.get("web")
+
+  void setBuildDirectory(Path buildDirectory) {
+    this.buildDirectory = buildDirectory
+    this.buildBinDirectory = buildDirectory.resolve("apache-tomcat-${version}/bin")
+    this.buildConfDirectory = buildDirectory.resolve("apache-tomcat-${version}/conf")
+    this.buildWebDirectory = buildDirectory.resolve("apache-tomcat-${version}/webapps/ROOT")
+  }
 }
