@@ -56,11 +56,11 @@ class TomcatPlugin extends BaseGroovyPlugin {
     Path path = dependencyPlugin.path(id: settings.dependencyID, group: settings.dependencyGroup)
     filePlugin.untar(file: path, to: settings.buildDirectory)
 
-    filePlugin.copy(to: settings.buildConfDirectory) {
-      fileSet(dir: settings.configurationDirectory)
+    filePlugin.copy(to: settings.buildDirectory.resolve("apache-tomcat-${settings.version}/conf")) {
+      fileSet(dir: settings.confDirectory)
     }
 
-    filePlugin.copy(to: settings.buildBinDirectory) {
+    filePlugin.copy(to: settings.buildDirectory.resolve("apache-tomcat-${settings.version}/bin")) {
       fileSet(dir: settings.binDirectory)
     }
 

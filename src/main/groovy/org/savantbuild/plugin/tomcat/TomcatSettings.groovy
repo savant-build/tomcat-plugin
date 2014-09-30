@@ -35,16 +35,6 @@ class TomcatSettings {
   Path buildDirectory = Paths.get("build")
 
   /**
-   * The directory that the Tomcat bin files are located. Defaults to {@code build/apache-tomcat-8.0.12/bin}.
-   */
-  Path buildBinDirectory = buildDirectory.resolve("apache-tomcat-${version}/bin")
-
-  /**
-   * The directory that the Tomcat config files are located. Defaults to {@code build/apache-tomcat-8.0.12/conf}.
-   */
-  Path buildConfDirectory = buildDirectory.resolve("apache-tomcat-${version}/conf")
-
-  /**
    * The directory that the Tomcat web application is located. Defaults to {@code build/apache-tomcat-8.0.12/webapps/ROOT}.
    */
   Path buildWebDirectory = buildDirectory.resolve("apache-tomcat-${version}/webapps/ROOT")
@@ -52,7 +42,7 @@ class TomcatSettings {
   /**
    * The directory that the Tomcat conf files for the current project are located. Defaults to {@code src/main/tomcat/conf}.
    */
-  Path configurationDirectory = Paths.get("src/main/tomcat/conf")
+  Path confDirectory = Paths.get("src/main/tomcat/conf")
 
   /**
    * The directory that the Tomcat bin files for the current project are located. Defaults to {@code src/main/tomcat/bin}.
@@ -76,8 +66,12 @@ class TomcatSettings {
 
   void setBuildDirectory(Path buildDirectory) {
     this.buildDirectory = buildDirectory
-    this.buildBinDirectory = buildDirectory.resolve("apache-tomcat-${version}/bin")
-    this.buildConfDirectory = buildDirectory.resolve("apache-tomcat-${version}/conf")
     this.buildWebDirectory = buildDirectory.resolve("apache-tomcat-${version}/webapps/ROOT")
+  }
+
+  void setVersion(String version) {
+    this.version = version
+    this.buildWebDirectory = buildDirectory.resolve("apache-tomcat-${version}/webapps/ROOT")
+    this.dependencyID = "org.apache.tomcat:apache-tomcat:${version}:tar.gz"
   }
 }
