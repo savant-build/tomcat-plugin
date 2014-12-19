@@ -1,4 +1,4 @@
-## Tomcat Plugin
+## Tomcat Plugin ![semver 2.0.0 compliant](http://img.shields.io/badge/semver-2.0.0-brightgreen.svg?style=flat-square)
 
 This plugin provides the ability to build tomcat as a dependency for your project.
 
