@@ -54,6 +54,11 @@ class TomcatPlugin extends BaseGroovyPlugin {
    */
   void build() {
     Path path = dependencyPlugin.path(id: settings.dependencyID, group: settings.dependencyGroup)
+    if (path == null) {
+      fail("You must specify an artifact for your Tomcat tarball in a group named [${settings.dependencyGroup}] with the " +
+          "ID [${settings.dependencyID}]. You can change the group name and ID using the settings object of the Tomcat plugin.")
+    }
+
     filePlugin.untar(file: path, to: settings.buildDirectory)
 
     filePlugin.copy(to: settings.buildDirectory.resolve("apache-tomcat-${settings.version}/conf")) {
