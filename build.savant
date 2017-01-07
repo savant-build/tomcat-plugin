@@ -46,11 +46,11 @@ project(group: "org.savantbuild.plugin", name: "tomcat", version: "2.0.0", licen
 }
 
 // Plugins
-dependency = loadPlugin(id: "org.savantbuild.plugin:dependency:1.0.0")
-groovy = loadPlugin(id: "org.savantbuild.plugin:groovy:1.0.0")
-groovyTestNG = loadPlugin(id: "org.savantbuild.plugin:groovy-testng:1.0.0")
+dependency = loadPlugin(id: "org.savantbuild.plugin:dependency:${savantVersion}")
+groovy = loadPlugin(id: "org.savantbuild.plugin:groovy:${savantVersion}")
+groovyTestNG = loadPlugin(id: "org.savantbuild.plugin:groovy-testng:${savantVersion}")
 idea = loadPlugin(id: "org.savantbuild.plugin:idea:1.0.1")
-release = loadPlugin(id: "org.savantbuild.plugin:release-git:1.0.0")
+release = loadPlugin(id: "org.savantbuild.plugin:release-git:${savantVersion}")
 
 // Plugin settings
 groovy.settings.groovyVersion = "2.4"
