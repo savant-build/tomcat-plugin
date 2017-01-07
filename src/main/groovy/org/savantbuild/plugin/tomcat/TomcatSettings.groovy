@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Inversoft Inc., All Rights Reserved
+ * Copyright (c) 2014-2016, Inversoft Inc., All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,19 +25,14 @@ import java.nio.file.Paths
  */
 class TomcatSettings {
   /**
-   * The Tomcat version. This is used to fetch the tar.gz file and build Paths in this file. Defaults to {@code 8.0.12}.
-   */
-  String version = "8.0.12"
-
-  /**
    * The directory that the Tomcat tar.gz file is exploded to. Defaults to {@code build}.
    */
   Path buildDirectory = Paths.get("build")
 
   /**
-   * The directory that the Tomcat web application is located. Defaults to {@code build/apache-tomcat-8.0.12/webapps/ROOT}.
+   * The directory that the Tomcat web application is located. Defaults to {@code build/apache-tomcat/webapps/ROOT}.
    */
-  Path buildWebDirectory = buildDirectory.resolve("apache-tomcat-${version}/webapps/ROOT")
+  Path buildWebDirectory = buildDirectory.resolve("apache-tomcat/webapps/ROOT")
 
   /**
    * The directory that the Tomcat conf files for the current project are located. Defaults to {@code src/main/tomcat/conf}.
@@ -55,23 +50,7 @@ class TomcatSettings {
   String dependencyGroup = "tomcat"
 
   /**
-   * The Tomcat dependency ID that is used to fetch the Tomcat tar.gz file. Defaults to {@code org.apache.tomcat:apache-tomcat:8.0.12:tar.gz}.
-   */
-  String dependencyID = "org.apache.tomcat:apache-tomcat:${version}:tar.gz"
-
-  /**
    * The web application directory in current project. Defaults to {@code web}.
    */
   Path webDirectory = Paths.get("web")
-
-  void setBuildDirectory(Path buildDirectory) {
-    this.buildDirectory = buildDirectory
-    this.buildWebDirectory = buildDirectory.resolve("apache-tomcat-${version}/webapps/ROOT")
-  }
-
-  void setVersion(String version) {
-    this.version = version
-    this.buildWebDirectory = buildDirectory.resolve("apache-tomcat-${version}/webapps/ROOT")
-    this.dependencyID = "org.apache.tomcat:apache-tomcat:${version}:tar.gz"
-  }
 }

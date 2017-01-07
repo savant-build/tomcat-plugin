@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Inversoft Inc., All Rights Reserved
+ * Copyright (c) 2014-2016, Inversoft Inc., All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,14 @@
  */
 package org.savantbuild.plugin.tomcat
 
+import java.nio.file.Files
+
 import org.savantbuild.domain.Project
 import org.savantbuild.output.Output
 import org.savantbuild.plugin.dep.DependencyPlugin
 import org.savantbuild.plugin.file.FilePlugin
 import org.savantbuild.plugin.groovy.BaseGroovyPlugin
 import org.savantbuild.runtime.RuntimeConfiguration
-
-import java.nio.file.Files
-import java.nio.file.Path
 
 /**
  * Tomcat plugin.
@@ -53,19 +52,33 @@ class TomcatPlugin extends BaseGroovyPlugin {
    * </pre>
    */
   void build() {
-    Path path = dependencyPlugin.path(id: settings.dependencyID, group: settings.dependencyGroup)
-    if (path == null) {
-      fail("You must specify an artifact for your Tomcat tarball in a group named [${settings.dependencyGroup}] with the " +
-          "ID [${settings.dependencyID}]. You can change the group name and ID using the settings object of the Tomcat plugin.")
+    def dependencyGroup = project.dependencies.groups.get(settings.dependencyGroup)
+    if (dependencyGroup == null || dependencyGroup.dependencies.size() > 1) {
+      fail("You must specify an artifact for your Tomcat tarball in a group named [${settings.dependencyGroup}] with a single dependency like this" +
+          "  group(name: \"${settings.dependencyGroup}\") {\n" +
+          "    dependency(id: \"org.apache.tomcat:apache-tomcat:8.5.9:tar.gz\")\n" +
+          "  }\n" +
+          "\n This is just an example, your version may be different.")
     }
+
+    def dependencyVersion = dependencyGroup.dependencies.get(0).version.toString()
+    def depId = dependencyGroup.dependencies.get(0).toString()
+    def path = dependencyPlugin.path(id: depId, group: settings.dependencyGroup)
 
     filePlugin.untar(file: path, to: settings.buildDirectory)
 
-    filePlugin.copy(to: settings.buildDirectory.resolve("apache-tomcat-${settings.version}/conf")) {
+    // Move apache-tomcat-{version} --> apache-tomcat. Must be a better way to do this, help me Brian
+    def buildDirectoryPath = project.directory.resolve("${settings.buildDirectory}")
+    Files.move(
+        buildDirectoryPath.resolve("apache-tomcat-${dependencyVersion}"),
+        buildDirectoryPath.resolve("apache-tomcat")
+    )
+
+    filePlugin.copy(to: settings.buildDirectory.resolve("apache-tomcat/conf")) {
       fileSet(dir: settings.confDirectory)
     }
 
-    filePlugin.copy(to: settings.buildDirectory.resolve("apache-tomcat-${settings.version}/bin")) {
+    filePlugin.copy(to: settings.buildDirectory.resolve("apache-tomcat/bin")) {
       fileSet(dir: settings.binDirectory)
     }
 

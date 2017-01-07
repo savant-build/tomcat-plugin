@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Inversoft Inc., All Rights Reserved
+ * Copyright (c) 2014-2016, Inversoft Inc., All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.savantbuild.domain.Project
 import org.savantbuild.io.FileTools
 import org.savantbuild.output.Output
 import org.savantbuild.output.SystemOutOutput
+import org.savantbuild.runtime.BuildFailureException
 import org.savantbuild.runtime.RuntimeConfiguration
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.BeforeSuite
@@ -79,6 +80,47 @@ class TomcatPluginTest {
     )
   }
 
+  @Test(expectedExceptions = BuildFailureException.class)
+  void build_missingDependencyGroup() {
+    FileTools.prune(project.directory.resolve("build"))
+
+    project.dependencies = new Dependencies(new DependencyGroup("elasticsearch", false, new Artifact("org.apache.tomcat:apache-tomcat:8.0.12:tar.gz", false)))
+    TomcatPlugin plugin = new TomcatPlugin(project, new RuntimeConfiguration(), output)
+    plugin.build()
+  }
+
+  @Test(expectedExceptions = BuildFailureException.class)
+  void build_tooManyDependencies() {
+    FileTools.prune(project.directory.resolve("build"))
+
+    project.dependencies = new Dependencies(
+        new DependencyGroup("tomcat", false,
+            new Artifact("org.apache.tomcat:apache-tomcat:8.0.12:tar.gz", false),
+            new Artifact("org.apache.tomcat:apache-tomcat:8.5.9:tar.gz", false)
+        ))
+
+    TomcatPlugin plugin = new TomcatPlugin(project, new RuntimeConfiguration(), output)
+    plugin.build()
+  }
+
+  @Test
+  void build_alternateGroupName() {
+    FileTools.prune(project.directory.resolve("build"))
+
+    project.dependencies = new Dependencies(new DependencyGroup("foobar", false, new Artifact("org.apache.tomcat:apache-tomcat:8.0.12:tar.gz", false)))
+
+    TomcatPlugin plugin = new TomcatPlugin(project, new RuntimeConfiguration(), output)
+    plugin.settings.dependencyGroup = "foobar"
+    plugin.build()
+
+    assertFilesEqual("build/apache-tomcat/conf/server.xml", "src/main/tomcat/conf/server.xml")
+    assertFilesEqual("build/apache-tomcat/bin/setenv.sh", "src/main/tomcat/bin/setenv.sh")
+    assertTrue(Files.isDirectory(project.directory.resolve("build/apache-tomcat/lib")))
+    assertTrue(Files.isDirectory(project.directory.resolve("build/apache-tomcat/webapps")))
+    assertTrue(Files.isSymbolicLink(project.directory.resolve("build/apache-tomcat/webapps/ROOT")))
+  }
+
+
   @Test
   void build() {
     FileTools.prune(project.directory.resolve("build"))
@@ -86,11 +128,11 @@ class TomcatPluginTest {
     TomcatPlugin plugin = new TomcatPlugin(project, new RuntimeConfiguration(), output)
     plugin.build()
 
-    assertFilesEqual("build/apache-tomcat-8.0.12/conf/server.xml", "src/main/tomcat/conf/server.xml")
-    assertFilesEqual("build/apache-tomcat-8.0.12/bin/setenv.sh", "src/main/tomcat/bin/setenv.sh")
-    assertTrue(Files.isDirectory(project.directory.resolve("build/apache-tomcat-8.0.12/lib")))
-    assertTrue(Files.isDirectory(project.directory.resolve("build/apache-tomcat-8.0.12/webapps")))
-    assertTrue(Files.isSymbolicLink(project.directory.resolve("build/apache-tomcat-8.0.12/webapps/ROOT")))
+    assertFilesEqual("build/apache-tomcat/conf/server.xml", "src/main/tomcat/conf/server.xml")
+    assertFilesEqual("build/apache-tomcat/bin/setenv.sh", "src/main/tomcat/bin/setenv.sh")
+    assertTrue(Files.isDirectory(project.directory.resolve("build/apache-tomcat/lib")))
+    assertTrue(Files.isDirectory(project.directory.resolve("build/apache-tomcat/webapps")))
+    assertTrue(Files.isSymbolicLink(project.directory.resolve("build/apache-tomcat/webapps/ROOT")))
   }
 
   private void assertFilesEqual(String file1, String file2) {
