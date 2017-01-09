@@ -67,7 +67,7 @@ class TomcatPlugin extends BaseGroovyPlugin {
 
     filePlugin.untar(file: path, to: settings.buildDirectory)
 
-    // Move apache-tomcat-{version} --> apache-tomcat. Must be a better way to do this, help me Brian
+    // Move apache-tomcat-{version} --> apache-tomcat.
     def buildDirectoryPath = project.directory.resolve("${settings.buildDirectory}")
     Files.move(
         buildDirectoryPath.resolve("apache-tomcat-${dependencyVersion}"),
