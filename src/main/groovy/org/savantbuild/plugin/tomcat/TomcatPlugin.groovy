@@ -65,10 +65,12 @@ class TomcatPlugin extends BaseGroovyPlugin {
     def depId = dependencyGroup.dependencies.get(0).toString()
     def path = dependencyPlugin.path(id: depId, group: settings.dependencyGroup)
 
-    filePlugin.untar(file: path, to: settings.buildDirectory)
+    def buildDirectoryPath = project.directory.resolve("${settings.buildDirectory}")
+    filePlugin.prune(dir: buildDirectoryPath.resolve("apache-tomcat"))
+    filePlugin.prune(dir: buildDirectoryPath.resolve("apache-tomcat-${dependencyVersion}"))
 
     // Move apache-tomcat-{version} --> apache-tomcat.
-    def buildDirectoryPath = project.directory.resolve("${settings.buildDirectory}")
+    filePlugin.untar(file: path, to: settings.buildDirectory)
     Files.move(
         buildDirectoryPath.resolve("apache-tomcat-${dependencyVersion}"),
         buildDirectoryPath.resolve("apache-tomcat")
