@@ -35,7 +35,7 @@ project(group: "org.savantbuild.plugin", name: "tomcat", version: "1.0.1", licen
       dependency(id: "org.savantbuild.plugin:file:${savantVersion}")
     }
     group(name: "test-compile", export: false) {
-      dependency(id: "org.savantbuild:savant-io:${savantVersion}")
+      dependency(id: "org.savantbuild:savant-io:1.0.1")
       dependency(id: "org.testng:testng:6.8.7")
     }
   }
