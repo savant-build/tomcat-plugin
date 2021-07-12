@@ -16,9 +16,11 @@
 package org.savantbuild.plugin.tomcat
 
 import java.nio.file.Files
+import java.nio.file.Path
 
 import org.savantbuild.domain.Project
 import org.savantbuild.output.Output
+import org.savantbuild.parser.groovy.GroovyTools
 import org.savantbuild.plugin.dep.DependencyPlugin
 import org.savantbuild.plugin.file.FilePlugin
 import org.savantbuild.plugin.groovy.BaseGroovyPlugin
@@ -92,5 +94,72 @@ class TomcatPlugin extends BaseGroovyPlugin {
     }
 
     filePlugin.symlink(target: settings.webDirectory, link: settings.buildWebDirectory)
+  }
+
+  void start(Map<String, Object> attributes) {
+    if (!GroovyTools.attributesValid(attributes, ["debug", "detach"], [], ["debug": Boolean.class, "detach": Boolean.class])) {
+      fail("Invalid attributes for start() method. You can supply either the [debug] or [detach] attributes as booleans. For example:\n\n" +
+          "  start(debug: true, detach: false)")
+    }
+
+    boolean debug = attributes["debug"] != null ? attributes["debug"] : false
+    boolean detach = attributes["detach"] != null ? attributes["detach"] : false
+    Path catalina = project.directory.resolve("${settings.buildDirectory}/apache-tomcat/bin/catalina.sh")
+    if (Files.isRegularFile(catalina)) {
+      String pid = getProcessId("${settings.buildDirectory}/apache-tomcat")
+      if (pid == null) {
+        if (detach) {
+          def arg = debug ? "jpda run" : "run"
+          Runtime.getRuntime().exec("./build/dist/fusionauth-app/apache-tomcat/bin/catalina.sh ${arg}")
+          pid = getProcessId("build/dist/fusionauth-app/apache-tomcat")
+          output.info("Tomcat started and is running under process Id [${pid}]")
+        } else {
+          if (debug) {
+            new ProcessBuilder("${settings.buildDirectory}/apache-tomcat/bin/catalina.sh", "jpda", "run").inheritIO().start().waitFor()
+          } else {
+            new ProcessBuilder("${settings.buildDirectory}/apache-tomcat/bin/catalina.sh", "run").inheritIO().start().waitFor()
+          }
+        }
+      } else {
+        output.info("Tomcat is already running under process Id [${pid}]")
+      }
+    } else {
+      output.info("Looks like you haven't run `sb tomcat` yet. How many times do I need to remind you? Hehe...")
+    }
+  }
+
+  void status() {
+    String pid = getProcessId("${settings.buildDirectory}/apache-tomcat")
+    if (pid == null) {
+      output.info("Stopped")
+    } else {
+      output.info("Running [${pid}]")
+    }
+  }
+
+  void stop() {
+    sendProcessSignal("TERM", "${settings.buildDirectory}/apache-tomcat")
+
+    // Give it a second to shut down so it can release locks otherwise we puke sometimes on the next step
+    Thread.sleep(500)
+  }
+
+  void threadDump() {
+    sendProcessSignal("QUIT", "${settings.buildDirectory}/apache-tomcat")
+  }
+
+  private static String getProcessId(String processName) {
+    return "ps -efww".execute()
+        .text
+        .split("\n")
+        .find { it.contains processName }?.split()?.getAt(1) as Integer
+  }
+
+  private void sendProcessSignal(String signal, String processName) {
+    def pid = getProcessId(processName)
+    if (pid != null) {
+      output.info("Sending [${signal}] signal to process [${pid}].")
+      "kill -s ${signal} ${pid}".execute().consumeProcessOutput(System.out, System.err)
+    }
   }
 }
