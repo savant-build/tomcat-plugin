@@ -14,13 +14,22 @@
  * language governing permissions and limitations under the License.
  */
 package org.savantbuild.plugin.tomcat
-import org.savantbuild.dep.domain.*
+
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+
+import org.savantbuild.dep.domain.Artifact
+import org.savantbuild.dep.domain.Dependencies
+import org.savantbuild.dep.domain.DependencyGroup
+import org.savantbuild.dep.domain.License
 import org.savantbuild.dep.workflow.FetchWorkflow
 import org.savantbuild.dep.workflow.PublishWorkflow
 import org.savantbuild.dep.workflow.Workflow
 import org.savantbuild.dep.workflow.process.CacheProcess
 import org.savantbuild.dep.workflow.process.URLProcess
 import org.savantbuild.domain.Project
+import org.savantbuild.domain.Version
 import org.savantbuild.io.FileTools
 import org.savantbuild.output.Output
 import org.savantbuild.output.SystemOutOutput
@@ -29,10 +38,6 @@ import org.savantbuild.runtime.RuntimeConfiguration
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.BeforeSuite
 import org.testng.annotations.Test
-
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
 
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertTrue
@@ -66,7 +71,7 @@ class TomcatPluginTest {
     project.group = "org.savantbuild.test"
     project.name = "test-project"
     project.version = new Version("1.0")
-    project.licenses.put(License.ApacheV2_0, null)
+    project.licenses.add(License.parse("ApacheV2_0", null))
 
     project.dependencies = new Dependencies(new DependencyGroup("tomcat", false, new Artifact("org.apache.tomcat:apache-tomcat:8.0.12:tar.gz", false)))
     project.workflow = new Workflow(
