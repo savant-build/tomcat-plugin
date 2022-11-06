@@ -73,7 +73,7 @@ class TomcatPluginTest {
     project.version = new Version("1.0")
     project.licenses.add(License.parse("ApacheV2_0", null))
 
-    project.dependencies = new Dependencies(new DependencyGroup("tomcat", false, new Artifact("org.apache.tomcat:apache-tomcat:8.0.12:tar.gz", false)))
+    project.dependencies = new Dependencies(new DependencyGroup("tomcat", false, new Artifact("org.apache.tomcat:apache-tomcat:8.0.12:tar.gz")))
     project.workflow = new Workflow(
         new FetchWorkflow(output,
             new CacheProcess(output, projectDir.resolve("build/cache").toString()),
@@ -89,7 +89,7 @@ class TomcatPluginTest {
   void build_missingDependencyGroup() {
     FileTools.prune(project.directory.resolve("build"))
 
-    project.dependencies = new Dependencies(new DependencyGroup("elasticsearch", false, new Artifact("org.apache.tomcat:apache-tomcat:8.0.12:tar.gz", false)))
+    project.dependencies = new Dependencies(new DependencyGroup("elasticsearch", false, new Artifact("org.apache.tomcat:apache-tomcat:8.0.12:tar.gz")))
     TomcatPlugin plugin = new TomcatPlugin(project, new RuntimeConfiguration(), output)
     plugin.build()
   }
@@ -100,8 +100,8 @@ class TomcatPluginTest {
 
     project.dependencies = new Dependencies(
         new DependencyGroup("tomcat", false,
-            new Artifact("org.apache.tomcat:apache-tomcat:8.0.12:tar.gz", false),
-            new Artifact("org.apache.tomcat:apache-tomcat:8.5.9:tar.gz", false)
+            new Artifact("org.apache.tomcat:apache-tomcat:8.0.12:tar.gz"),
+            new Artifact("org.apache.tomcat:apache-tomcat:8.5.9:tar.gz")
         ))
 
     TomcatPlugin plugin = new TomcatPlugin(project, new RuntimeConfiguration(), output)
@@ -112,7 +112,7 @@ class TomcatPluginTest {
   void build_alternateGroupName() {
     FileTools.prune(project.directory.resolve("build"))
 
-    project.dependencies = new Dependencies(new DependencyGroup("foobar", false, new Artifact("org.apache.tomcat:apache-tomcat:8.0.12:tar.gz", false)))
+    project.dependencies = new Dependencies(new DependencyGroup("foobar", false, new Artifact("org.apache.tomcat:apache-tomcat:8.0.12:tar.gz")))
 
     TomcatPlugin plugin = new TomcatPlugin(project, new RuntimeConfiguration(), output)
     plugin.settings.dependencyGroup = "foobar"
