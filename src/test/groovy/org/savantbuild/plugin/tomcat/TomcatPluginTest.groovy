@@ -74,13 +74,15 @@ class TomcatPluginTest {
     project.licenses.add(License.parse("ApacheV2_0", null))
 
     project.dependencies = new Dependencies(new DependencyGroup("tomcat", false, new Artifact("org.apache.tomcat:apache-tomcat:8.0.12:tar.gz")))
+
+    def cacheDir = projectDir.resolve("build/cache")
     project.workflow = new Workflow(
         new FetchWorkflow(output,
-            new CacheProcess(output, projectDir.resolve("build/cache").toString()),
+            new CacheProcess(output, cacheDir.toString(), cacheDir.toString()),
             new URLProcess(output, "https://repository.savantbuild.org", null, null)
         ),
         new PublishWorkflow(
-            new CacheProcess(output, projectDir.resolve("build/cache").toString())
+            new CacheProcess(output, cacheDir.toString(), cacheDir.toString())
         ),
         output
     )

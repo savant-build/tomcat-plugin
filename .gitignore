@@ -1,3 +1,4 @@
 *.iws
+.savant
 build
 test-project/build
