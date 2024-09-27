@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016, Inversoft Inc., All Rights Reserved
+ * Copyright (c) 2014-2024, Inversoft Inc., All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ class TomcatPluginTest {
     project = new Project(projectDir.resolve("test-project"), output)
     project.group = "org.savantbuild.test"
     project.name = "test-project"
-    project.version = new Version("1.0")
+    project.version = new Version("1.0.0")
     project.licenses.add(License.parse("ApacheV2_0", null))
 
     project.dependencies = new Dependencies(new DependencyGroup("tomcat", false, new Artifact("org.apache.tomcat:apache-tomcat:8.0.12:tar.gz")))
