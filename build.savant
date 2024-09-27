@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the License.
  */
-def savantVersion = "2.0.0"
+savantVersion = "2.0.0"
 // 2.0.0 for tomcat was release way ahead of the rest of Savant, back in 2017
 project(group: "org.savantbuild.plugin", name: "tomcat", version: "2.0.2", licenses: ["Apache-2.0"]) {
   workflow {
